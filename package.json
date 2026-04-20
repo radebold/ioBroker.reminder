@@ -1,0 +1,49 @@
+{
+  "name": "iobroker.reminder-n",
+  "version": "0.0.1",
+  "description": "Rhythmic WhatsApp reminders for children with parent confirmation workflow",
+  "author": {
+    "name": "Thomas Radebold"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/radebold/ioBroker.reminder.n",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radebold/ioBroker.reminder.n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radebold/ioBroker.reminder.n/issues"
+  },
+  "keywords": [
+    "iobroker",
+    "adapter",
+    "whatsapp",
+    "open-wa",
+    "reminder",
+    "children",
+    "household"
+  ],
+  "main": "build/main.js",
+  "types": "build/main.d.ts",
+  "files": [
+    "admin/",
+    "build/",
+    "io-package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.1.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

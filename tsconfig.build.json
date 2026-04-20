@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "removeComments": false
+  },
+  "exclude": ["build", "node_modules"]
+}

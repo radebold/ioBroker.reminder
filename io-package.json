@@ -1,0 +1,180 @@
+{
+  "common": {
+    "name": "reminder-n",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "Initial version with weekly WhatsApp reminders, child replies and parent confirmation.",
+        "de": "Erste Version mit wöchentlichen WhatsApp-Erinnerungen, Rückmeldung des Kindes und Bestätigung durch Papa."
+      }
+    },
+    "titleLang": {
+      "en": "Kinder Haushalts Reminder",
+      "de": "Kinder Haushalts Reminder"
+    },
+    "desc": {
+      "en": "Sends rhythmic WhatsApp reminders via open-wa, tracks child replies and requires parent confirmation.",
+      "de": "Sendet rhythmische WhatsApp-Erinnerungen über open-wa, verarbeitet Rückmeldungen des Kindes und fordert eine Bestätigung durch Papa an."
+    },
+    "authors": [
+      "Thomas Radebold"
+    ],
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "reminder-n.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/radebold/ioBroker.reminder.n/main/admin/reminder-n.png",
+    "readme": "https://github.com/radebold/ioBroker.reminder.n/blob/main/README.md",
+    "loglevel": "info",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "tier": 3,
+    "messagebox": true,
+    "adminUI": {
+      "config": "json"
+    },
+    "globalDependencies": [
+      {
+        "admin": ">=6.0.0"
+      }
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.0"
+      }
+    ],
+    "dataFolder": "reminder-n.%INSTANCE%"
+  },
+  "native": {
+    "openWaInstance": "open-wa.0",
+    "incomingStateId": "",
+    "historyLimit": 100,
+    "logIncomingMessages": true,
+    "tasks": [
+      {
+        "enabled": true,
+        "id": "treppe",
+        "title": "Treppe absaugen",
+        "message": "Bitte die Treppe absaugen.",
+        "weekday": 3,
+        "time": "17:00",
+        "childChatId": "120000000000000000@g.us",
+        "parentChatId": "4917012345678@c.us",
+        "childReminderHours": 3,
+        "parentReminderHours": 3,
+        "childKeywords": "erledigt,fertig,done",
+        "parentKeywords": "ja,bestaetigt,bestätigt,ok"
+      }
+    ]
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "name": "If adapter is connected",
+        "type": "boolean",
+        "role": "indicator.connected",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastAction",
+      "type": "state",
+      "common": {
+        "name": "Last action",
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastIncoming",
+      "type": "state",
+      "common": {
+        "name": "Last incoming message as JSON",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "runs",
+      "type": "channel",
+      "common": {
+        "name": "Run overview"
+      },
+      "native": {}
+    },
+    {
+      "_id": "runs.activeJson",
+      "type": "state",
+      "common": {
+        "name": "Active runs as JSON",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": "[]"
+      },
+      "native": {}
+    },
+    {
+      "_id": "runs.historyJson",
+      "type": "state",
+      "common": {
+        "name": "History as JSON",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": "[]"
+      },
+      "native": {}
+    },
+    {
+      "_id": "commands",
+      "type": "channel",
+      "common": {
+        "name": "Commands"
+      },
+      "native": {}
+    },
+    {
+      "_id": "commands.processIncomingJson",
+      "type": "state",
+      "common": {
+        "name": "Process incoming WhatsApp JSON",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": true,
+        "def": ""
+      },
+      "native": {}
+    }
+  ]
+}
