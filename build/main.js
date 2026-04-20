@@ -4,7 +4,7 @@ const adapter_core_1 = require("@iobroker/adapter-core");
 const config_1 = require("./lib/config");
 const messageParser_1 = require("./lib/messageParser");
 const runtimeStore_1 = require("./lib/runtimeStore");
-class ReminderNAdapter extends adapter_core_1.Adapter {
+class ReminderAdapter extends adapter_core_1.Adapter {
     cfg;
     tasks = new Map();
     runs = new Map();
@@ -16,7 +16,7 @@ class ReminderNAdapter extends adapter_core_1.Adapter {
     constructor(options = {}) {
         super({
             ...options,
-            name: 'reminder-n',
+            name: 'reminder',
         });
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
@@ -549,9 +549,9 @@ class ReminderNAdapter extends adapter_core_1.Adapter {
     }
 }
 if (require.main !== module) {
-    module.exports = (options) => new ReminderNAdapter(options);
+    module.exports = (options) => new ReminderAdapter(options);
 }
 else {
-    (() => new ReminderNAdapter())();
+    (() => new ReminderAdapter())();
 }
 //# sourceMappingURL=main.js.map

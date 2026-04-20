@@ -1,6 +1,6 @@
-# ioBroker.reminder-n
+# ioBroker.reminder
 
-![Logo](admin/reminder-n.png)
+![Logo](admin/reminder.png)
 
 **Kinder Haushalts Reminder** for ioBroker.
 
@@ -21,7 +21,7 @@ Every open process gets its own reference code so multiple tasks can run in para
 
 ## Important note about the package name
 
-The repository is `ioBroker.reminder.n`, but the adapter package in this project is **`iobroker.reminder-n`** and the namespace is **`reminder-n.X`**.
+The repository is `ioBroker.reminder`, but the adapter package in this project is **`iobroker.reminder`** and the namespace is **`reminder.X`**.
 That keeps the adapter namespace as one clean segment inside ioBroker.
 
 ## Requirements
@@ -30,7 +30,7 @@ That keeps the adapter namespace as one clean segment inside ioBroker.
 - an `open-wa` instance for outgoing WhatsApp messages
 - one of these options for incoming replies:
   - a configured state that receives the latest incoming message JSON, or
-  - `sendTo('reminder-n.X', 'incoming', payload)` from another script/adapter
+  - `sendTo('reminder.X', 'incoming', payload)` from another script/adapter
 
 ## open-wa outgoing format
 
@@ -102,12 +102,12 @@ Example task:
 
 ### Static states
 
-- `reminder-n.0.info.connection`
-- `reminder-n.0.info.lastAction`
-- `reminder-n.0.info.lastIncoming`
-- `reminder-n.0.runs.activeJson`
-- `reminder-n.0.runs.historyJson`
-- `reminder-n.0.commands.processIncomingJson`
+- `reminder.0.info.connection`
+- `reminder.0.info.lastAction`
+- `reminder.0.info.lastIncoming`
+- `reminder.0.runs.activeJson`
+- `reminder.0.runs.historyJson`
+- `reminder.0.commands.processIncomingJson`
 
 ### Per task
 
@@ -131,7 +131,7 @@ For every configured task the adapter creates:
 
 Write JSON to:
 
-`reminder-n.0.commands.processIncomingJson`
+`reminder.0.commands.processIncomingJson`
 
 Example value:
 
@@ -142,7 +142,7 @@ Example value:
 ### Inject an incoming message through messagebox
 
 ```js
-sendTo('reminder-n.0', 'incoming', {
+sendTo('reminder.0', 'incoming', {
   from: '4917012345678@c.us',
   text: 'ja #TREPPE-4821',
   timestamp: Date.now()
@@ -153,13 +153,13 @@ sendTo('reminder-n.0', 'incoming', {
 
 Set this state to `true`:
 
-`reminder-n.0.tasks.<taskId>.commands.trigger`
+`reminder.0.tasks.<taskId>.commands.trigger`
 
 ### Reset an open run
 
 Set this state to `true`:
 
-`reminder-n.0.tasks.<taskId>.commands.reset`
+`reminder.0.tasks.<taskId>.commands.reset`
 
 ## Build
 

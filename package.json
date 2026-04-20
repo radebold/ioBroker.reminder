@@ -1,18 +1,18 @@
 {
-  "name": "iobroker.reminder-n",
+  "name": "iobroker.reminder",
   "version": "0.0.1",
   "description": "Rhythmic WhatsApp reminders for children with parent confirmation workflow",
   "author": {
     "name": "Thomas Radebold"
   },
   "license": "MIT",
-  "homepage": "https://github.com/radebold/ioBroker.reminder.n",
+  "homepage": "https://github.com/radebold/ioBroker.reminder",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radebold/ioBroker.reminder.n.git"
+    "url": "git+https://github.com/radebold/ioBroker.reminder.git"
   },
   "bugs": {
-    "url": "https://github.com/radebold/ioBroker.reminder.n/issues"
+    "url": "https://github.com/radebold/ioBroker.reminder/issues"
   },
   "keywords": [
     "iobroker",

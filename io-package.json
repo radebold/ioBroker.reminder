@@ -1,6 +1,6 @@
 {
   "common": {
-    "name": "reminder-n",
+    "name": "reminder",
     "version": "0.0.1",
     "news": {
       "0.0.1": {
@@ -25,10 +25,10 @@
     },
     "platform": "Javascript/Node.js",
     "mode": "daemon",
-    "icon": "reminder-n.png",
+    "icon": "reminder.png",
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/radebold/ioBroker.reminder.n/main/admin/reminder-n.png",
-    "readme": "https://github.com/radebold/ioBroker.reminder.n/blob/main/README.md",
+    "extIcon": "https://raw.githubusercontent.com/radebold/ioBroker.reminder/main/admin/reminder.png",
+    "readme": "https://github.com/radebold/ioBroker.reminder/blob/main/README.md",
     "loglevel": "info",
     "compact": true,
     "connectionType": "local",
@@ -48,7 +48,7 @@
         "js-controller": ">=5.0.0"
       }
     ],
-    "dataFolder": "reminder-n.%INSTANCE%"
+    "dataFolder": "reminder.%INSTANCE%"
   },
   "native": {
     "openWaInstance": "open-wa.0",

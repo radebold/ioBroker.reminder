@@ -14,8 +14,8 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder-n.X', 'incoming', payload).",
-            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder-n.X', 'incoming', payload) angeliefert werden."
+            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder.X', 'incoming', payload).",
+            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder.X', 'incoming', payload) angeliefert werden."
           }
         },
         "openWaInstance": {

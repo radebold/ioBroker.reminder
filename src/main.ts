@@ -13,7 +13,7 @@ import { normalizeAdapterConfig, normalizeTasks, weekdayLabel } from './lib/conf
 import { createMessageFingerprint, extractRefCode, matchesKeyword, normalizeIncomingMessage } from './lib/messageParser';
 import { loadRuntimeStore, saveRuntimeStore } from './lib/runtimeStore';
 
-class ReminderNAdapter extends Adapter {
+class ReminderAdapter extends Adapter {
   private cfg!: AdapterConfig;
   private tasks = new Map<string, TaskConfig>();
   private runs = new Map<string, ActiveRun>();
@@ -26,7 +26,7 @@ class ReminderNAdapter extends Adapter {
   public constructor(options: Partial<ioBroker.AdapterOptions> = {}) {
     super({
       ...options,
-      name: 'reminder-n',
+      name: 'reminder',
     });
 
     this.on('ready', this.onReady.bind(this));
@@ -647,7 +647,7 @@ class ReminderNAdapter extends Adapter {
 }
 
 if (require.main !== module) {
-  module.exports = (options?: Partial<ioBroker.AdapterOptions>) => new ReminderNAdapter(options);
+  module.exports = (options?: Partial<ioBroker.AdapterOptions>) => new ReminderAdapter(options);
 } else {
-  (() => new ReminderNAdapter())();
+  (() => new ReminderAdapter())();
 }
