@@ -14,8 +14,8 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder.X', 'incoming', payload).",
-            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder.X', 'incoming', payload) angeliefert werden."
+            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder.X', 'incoming', payload). Optional wa.me links can be generated so the child or parent can just tap a link and send the prepared reply.",
+            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder.X', 'incoming', payload) angeliefert werden. Optional können wa.me-Links erzeugt werden, damit Kind oder Papa nur noch auf einen Link tippen und die vorbereitete Antwort senden müssen."
           }
         },
         "openWaInstance": {
@@ -25,7 +25,7 @@
             "en": "open-wa instance",
             "de": "open-wa Instanz"
           },
-          "sm": 6
+          "sm": 4
         },
         "incomingStateId": {
           "type": "text",
@@ -33,7 +33,19 @@
             "en": "Incoming message state ID",
             "de": "State-ID für eingehende Nachrichten"
           },
-          "sm": 6
+          "sm": 4
+        },
+        "replyLinkPhone": {
+          "type": "text",
+          "label": {
+            "en": "WhatsApp number for click-to-reply links",
+            "de": "WhatsApp-Nummer für Klick-Antworten"
+          },
+          "help": {
+            "en": "Optional. Enter the number of the WhatsApp account behind open-wa in international format without spaces, for example 491791514520. The adapter will build wa.me links that already contain the reply text.",
+            "de": "Optional. Trage die Nummer des WhatsApp-Kontos hinter open-wa im internationalen Format ohne Leerzeichen ein, z. B. 491791514520. Der Adapter baut dann wa.me-Links mit bereits vorbereiteter Antwort."
+          },
+          "sm": 4
         },
         "historyLimit": {
           "type": "number",
@@ -67,8 +79,8 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Each row defines one recurring task. Use exact WhatsApp chat IDs. Child replies should include words like erledigt or fertig. Parent replies should include ja or bestätigt.",
-            "de": "Jede Zeile definiert eine wiederkehrende Aufgabe. Verwende die exakten WhatsApp-Chat-IDs. Kind-Antworten sollten Wörter wie erledigt oder fertig enthalten. Papa-Antworten sollten ja oder bestätigt enthalten."
+            "en": "Each row defines one recurring task. For replies use the exact WhatsApp chat ID when needed. If your incoming payload uses values like ...@lid, copy exactly that value from info.lastIncoming instead of only the phone number.",
+            "de": "Jede Zeile definiert eine wiederkehrende Aufgabe. Für Antworten verwende bei Bedarf die exakte WhatsApp-Chat-ID. Wenn im eingehenden Payload Werte wie ...@lid auftauchen, kopiere genau diesen Wert aus info.lastIncoming statt nur der Telefonnummer."
           }
         },
         "tasks": {
@@ -132,55 +144,13 @@
               "width": 120,
               "default": 3,
               "options": [
-                {
-                  "label": {
-                    "en": "Sunday",
-                    "de": "Sonntag"
-                  },
-                  "value": 0
-                },
-                {
-                  "label": {
-                    "en": "Monday",
-                    "de": "Montag"
-                  },
-                  "value": 1
-                },
-                {
-                  "label": {
-                    "en": "Tuesday",
-                    "de": "Dienstag"
-                  },
-                  "value": 2
-                },
-                {
-                  "label": {
-                    "en": "Wednesday",
-                    "de": "Mittwoch"
-                  },
-                  "value": 3
-                },
-                {
-                  "label": {
-                    "en": "Thursday",
-                    "de": "Donnerstag"
-                  },
-                  "value": 4
-                },
-                {
-                  "label": {
-                    "en": "Friday",
-                    "de": "Freitag"
-                  },
-                  "value": 5
-                },
-                {
-                  "label": {
-                    "en": "Saturday",
-                    "de": "Samstag"
-                  },
-                  "value": 6
-                }
+                { "label": { "en": "Sunday", "de": "Sonntag" }, "value": 0 },
+                { "label": { "en": "Monday", "de": "Montag" }, "value": 1 },
+                { "label": { "en": "Tuesday", "de": "Dienstag" }, "value": 2 },
+                { "label": { "en": "Wednesday", "de": "Mittwoch" }, "value": 3 },
+                { "label": { "en": "Thursday", "de": "Donnerstag" }, "value": 4 },
+                { "label": { "en": "Friday", "de": "Freitag" }, "value": 5 },
+                { "label": { "en": "Saturday", "de": "Samstag" }, "value": 6 }
               ]
             },
             {

@@ -11,6 +11,19 @@ function normalizeText(text) {
         .trim()
         .replace(/\s+/g, ' ');
 }
+function normalizeTimestamp(value) {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+        return numeric;
+    }
+    if (typeof value === 'string') {
+        const parsed = Date.parse(value);
+        if (Number.isFinite(parsed)) {
+            return parsed;
+        }
+    }
+    return Date.now();
+}
 function extractRefCode(text) {
     const match = text.match(/#([A-Za-z0-9_-]+)/);
     return match ? match[1].toUpperCase() : null;
@@ -40,8 +53,7 @@ function normalizeIncomingMessage(raw) {
     }
     const from = String(source.from ?? source.chatId ?? source.sender ?? source.fromId ?? '').trim();
     const text = String(source.text ?? source.body ?? source.message ?? source.caption ?? '').trim();
-    const timestampValue = source.timestamp ?? source.ts ?? Date.now();
-    const timestamp = Number(timestampValue);
+    const timestamp = normalizeTimestamp(source.timestamp ?? source.ts ?? Date.now());
     const messageId = String(source.messageId ?? source.id ?? '').trim() || undefined;
     if (!from || !text) {
         return null;
@@ -49,7 +61,7 @@ function normalizeIncomingMessage(raw) {
     return {
         from,
         text,
-        timestamp: Number.isFinite(timestamp) ? timestamp : Date.now(),
+        timestamp,
         messageId,
         raw: source,
     };

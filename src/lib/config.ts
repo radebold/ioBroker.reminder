@@ -70,12 +70,17 @@ function normalizeTime(value: unknown): string {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
+function normalizeReplyLinkPhone(value: unknown): string {
+  return toStringValue(value).replace(/\D/g, '');
+}
+
 export function normalizeAdapterConfig(raw: Record<string, unknown>): AdapterConfig {
   return {
     openWaInstance: toStringValue(raw.openWaInstance, 'open-wa.0') || 'open-wa.0',
     incomingStateId: toStringValue(raw.incomingStateId),
     historyLimit: Math.max(10, toNumber(raw.historyLimit, 100)),
     logIncomingMessages: raw.logIncomingMessages !== false,
+    replyLinkPhone: normalizeReplyLinkPhone(raw.replyLinkPhone),
     tasks: Array.isArray(raw.tasks) ? raw.tasks as Array<Record<string, unknown>> : [],
   };
 }

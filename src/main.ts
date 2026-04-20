@@ -388,7 +388,7 @@ class ReminderAdapter extends Adapter {
     this.runs.set(run.runId, run);
     this.taskMemory.set(task.id, { lastScheduleDate: today });
 
-    await this.sendWhatsApp(task.childChatId, `${task.message}\n\nBitte antworte mit: erledigt #${run.refCode}`);
+    await this.sendWhatsApp(task.childChatId, this.buildChildMessage(task, run, false));
     await this.writeHistory({
       timestamp: nowIso,
       type: 'started',
@@ -428,12 +428,12 @@ class ReminderAdapter extends Adapter {
       return;
     }
 
-    if (run.status === 'waiting_child' && message.from === task.childChatId && matchesKeyword(message.text, task.childKeywords)) {
+    if (run.status === 'waiting_child' && this.matchesTaskParticipant(task.childChatId, message) && matchesKeyword(message.text, task.childKeywords)) {
       run.status = 'waiting_parent';
       run.childDoneAt = new Date(message.timestamp).toISOString();
       run.lastParentSendAt = new Date().toISOString();
 
-      await this.sendWhatsApp(task.parentChatId, `${task.title} wurde als erledigt gemeldet.\nBitte bestätigen mit: ja #${run.refCode}`);
+      await this.sendWhatsApp(task.parentChatId, this.buildParentMessage(task, run, false));
       await this.writeHistory({
         timestamp: new Date().toISOString(),
         type: 'child_done',
@@ -449,11 +449,11 @@ class ReminderAdapter extends Adapter {
       return;
     }
 
-    if (run.status === 'waiting_parent' && message.from === task.parentChatId && matchesKeyword(message.text, task.parentKeywords)) {
+    if (run.status === 'waiting_parent' && this.matchesTaskParticipant(task.parentChatId, message) && matchesKeyword(message.text, task.parentKeywords)) {
       run.status = 'confirmed';
       run.parentConfirmedAt = new Date(message.timestamp).toISOString();
 
-      await this.sendWhatsApp(task.childChatId, `Super, die Aufgabe \"${task.title}\" wurde bestätigt. ✅`);
+      await this.sendWhatsApp(task.childChatId, `Super, die Aufgabe "${task.title}" wurde bestätigt. ✅`);
       await this.writeHistory({
         timestamp: new Date().toISOString(),
         type: 'parent_confirmed',
@@ -487,7 +487,7 @@ class ReminderAdapter extends Adapter {
 
     const childCandidates = Array.from(this.runs.values()).filter(run => {
       const task = this.tasks.get(run.taskId);
-      return !!task && run.status === 'waiting_child' && task.childChatId === message.from;
+      return !!task && run.status === 'waiting_child' && this.matchesTaskParticipant(task.childChatId, message);
     });
 
     if (childCandidates.length === 1) {
@@ -496,7 +496,7 @@ class ReminderAdapter extends Adapter {
 
     const parentCandidates = Array.from(this.runs.values()).filter(run => {
       const task = this.tasks.get(run.taskId);
-      return !!task && run.status === 'waiting_parent' && task.parentChatId === message.from;
+      return !!task && run.status === 'waiting_parent' && this.matchesTaskParticipant(task.parentChatId, message);
     });
 
     if (parentCandidates.length === 1) {
@@ -506,8 +506,90 @@ class ReminderAdapter extends Adapter {
     return undefined;
   }
 
+  private matchesTaskParticipant(configuredId: string, message: IncomingMessage): boolean {
+    const configuredKeys = this.expandComparableIds(configuredId);
+    const messageKeys = new Set<string>();
+
+    for (const candidate of this.getIncomingIdCandidates(message)) {
+      for (const key of this.expandComparableIds(candidate)) {
+        messageKeys.add(key);
+      }
+    }
+
+    return configuredKeys.some(key => messageKeys.has(key));
+  }
+
+  private getIncomingIdCandidates(message: IncomingMessage): string[] {
+    const raw = message.raw ?? {};
+    const candidates = [
+      message.from,
+      String(raw.chatId ?? ''),
+      String(raw.sender ?? ''),
+      String(raw.from ?? ''),
+      String(raw.fromId ?? ''),
+    ].map(value => value.trim()).filter(Boolean);
+
+    return Array.from(new Set(candidates));
+  }
+
+  private expandComparableIds(input: string): string[] {
+    const value = String(input ?? '').trim().toLowerCase();
+    if (!value) {
+      return [];
+    }
+
+    const digits = value.replace(/\D/g, '');
+    return Array.from(new Set([value, digits].filter(Boolean)));
+  }
+
+  private buildChildMessage(task: TaskConfig, run: ActiveRun, isReminder: boolean): string {
+    const lines: string[] = [];
+    lines.push(isReminder ? `Erinnerung: ${task.message}` : task.message);
+    lines.push('');
+
+    const replyLink = this.buildReplyLink(`erledigt #${run.refCode}`);
+    if (replyLink) {
+      lines.push('✅ Einfach hier tippen und senden:');
+      lines.push(replyLink);
+      lines.push('');
+      lines.push('Alternativ reicht meistens auch einfach: erledigt');
+    } else {
+      lines.push(`Bitte antworte mit: erledigt #${run.refCode}`);
+      lines.push('Alternativ reicht meistens auch einfach: erledigt');
+    }
+
+    return lines.join('\n');
+  }
+
+  private buildParentMessage(task: TaskConfig, run: ActiveRun, isReminder: boolean): string {
+    const lines: string[] = [];
+    lines.push(isReminder ? `Erinnerung zur Bestätigung: ${task.title}` : `${task.title} wurde als erledigt gemeldet.`);
+    lines.push('');
+
+    const replyLink = this.buildReplyLink(`ja #${run.refCode}`);
+    if (replyLink) {
+      lines.push('✅ Zum Bestätigen einfach hier tippen und senden:');
+      lines.push(replyLink);
+      lines.push('');
+      lines.push('Alternativ reicht meistens auch einfach: ja');
+    } else {
+      lines.push(`Bitte bestätigen mit: ja #${run.refCode}`);
+      lines.push('Alternativ reicht meistens auch einfach: ja');
+    }
+
+    return lines.join('\n');
+  }
+
+  private buildReplyLink(replyText: string): string | null {
+    const phone = this.cfg.replyLinkPhone?.replace(/\D/g, '') ?? '';
+    if (!phone) {
+      return null;
+    }
+    return `https://wa.me/${phone}?text=${encodeURIComponent(replyText)}`;
+  }
+
   private async sendChildReminder(task: TaskConfig, run: ActiveRun): Promise<void> {
-    await this.sendWhatsApp(task.childChatId, `Erinnerung: ${task.message}\n\nBitte antworte mit: erledigt #${run.refCode}`);
+    await this.sendWhatsApp(task.childChatId, this.buildChildMessage(task, run, true));
     run.lastChildSendAt = new Date().toISOString();
     run.childReminderCount += 1;
     await this.writeHistory({
@@ -525,7 +607,7 @@ class ReminderAdapter extends Adapter {
   }
 
   private async sendParentReminder(task: TaskConfig, run: ActiveRun): Promise<void> {
-    await this.sendWhatsApp(task.parentChatId, `Bitte bestätigen: ${task.title}\nAntwort mit: ja #${run.refCode}`);
+    await this.sendWhatsApp(task.parentChatId, this.buildParentMessage(task, run, true));
     run.lastParentSendAt = new Date().toISOString();
     run.parentReminderCount += 1;
     await this.writeHistory({

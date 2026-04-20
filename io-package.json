@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "news": {
+      "0.0.3": {
+        "en": "Added click-to-reply wa.me links, improved incoming ID matching and ISO timestamp parsing.",
+        "de": "Klick-Antworten per wa.me-Link, verbesserter Abgleich eingehender IDs und Parsing von ISO-Zeitstempeln ergänzt."
+      },
       "0.0.2": {
         "en": "Install fix for GitHub URL installs. Prepack removed so ioBroker can install directly from the repository.",
         "de": "Installationsfix für GitHub-URL-Installationen. Prepack entfernt, damit ioBroker direkt aus dem Repository installieren kann."
@@ -57,6 +61,7 @@
   "native": {
     "openWaInstance": "open-wa.0",
     "incomingStateId": "",
+    "replyLinkPhone": "",
     "historyLimit": 100,
     "logIncomingMessages": true,
     "tasks": [

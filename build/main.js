@@ -326,7 +326,7 @@ class ReminderAdapter extends adapter_core_1.Adapter {
         };
         this.runs.set(run.runId, run);
         this.taskMemory.set(task.id, { lastScheduleDate: today });
-        await this.sendWhatsApp(task.childChatId, `${task.message}\n\nBitte antworte mit: erledigt #${run.refCode}`);
+        await this.sendWhatsApp(task.childChatId, this.buildChildMessage(task, run, false));
         await this.writeHistory({
             timestamp: nowIso,
             type: 'started',
@@ -360,11 +360,11 @@ class ReminderAdapter extends adapter_core_1.Adapter {
         if (!task) {
             return;
         }
-        if (run.status === 'waiting_child' && message.from === task.childChatId && (0, messageParser_1.matchesKeyword)(message.text, task.childKeywords)) {
+        if (run.status === 'waiting_child' && this.matchesTaskParticipant(task.childChatId, message) && (0, messageParser_1.matchesKeyword)(message.text, task.childKeywords)) {
             run.status = 'waiting_parent';
             run.childDoneAt = new Date(message.timestamp).toISOString();
             run.lastParentSendAt = new Date().toISOString();
-            await this.sendWhatsApp(task.parentChatId, `${task.title} wurde als erledigt gemeldet.\nBitte bestätigen mit: ja #${run.refCode}`);
+            await this.sendWhatsApp(task.parentChatId, this.buildParentMessage(task, run, false));
             await this.writeHistory({
                 timestamp: new Date().toISOString(),
                 type: 'child_done',
@@ -379,10 +379,10 @@ class ReminderAdapter extends adapter_core_1.Adapter {
             await this.syncTaskStates(task.id);
             return;
         }
-        if (run.status === 'waiting_parent' && message.from === task.parentChatId && (0, messageParser_1.matchesKeyword)(message.text, task.parentKeywords)) {
+        if (run.status === 'waiting_parent' && this.matchesTaskParticipant(task.parentChatId, message) && (0, messageParser_1.matchesKeyword)(message.text, task.parentKeywords)) {
             run.status = 'confirmed';
             run.parentConfirmedAt = new Date(message.timestamp).toISOString();
-            await this.sendWhatsApp(task.childChatId, `Super, die Aufgabe \"${task.title}\" wurde bestätigt. ✅`);
+            await this.sendWhatsApp(task.childChatId, `Super, die Aufgabe "${task.title}" wurde bestätigt. ✅`);
             await this.writeHistory({
                 timestamp: new Date().toISOString(),
                 type: 'parent_confirmed',
@@ -412,22 +412,92 @@ class ReminderAdapter extends adapter_core_1.Adapter {
         }
         const childCandidates = Array.from(this.runs.values()).filter(run => {
             const task = this.tasks.get(run.taskId);
-            return !!task && run.status === 'waiting_child' && task.childChatId === message.from;
+            return !!task && run.status === 'waiting_child' && this.matchesTaskParticipant(task.childChatId, message);
         });
         if (childCandidates.length === 1) {
             return childCandidates[0];
         }
         const parentCandidates = Array.from(this.runs.values()).filter(run => {
             const task = this.tasks.get(run.taskId);
-            return !!task && run.status === 'waiting_parent' && task.parentChatId === message.from;
+            return !!task && run.status === 'waiting_parent' && this.matchesTaskParticipant(task.parentChatId, message);
         });
         if (parentCandidates.length === 1) {
             return parentCandidates[0];
         }
         return undefined;
     }
+    matchesTaskParticipant(configuredId, message) {
+        const configuredKeys = this.expandComparableIds(configuredId);
+        const messageKeys = new Set();
+        for (const candidate of this.getIncomingIdCandidates(message)) {
+            for (const key of this.expandComparableIds(candidate)) {
+                messageKeys.add(key);
+            }
+        }
+        return configuredKeys.some(key => messageKeys.has(key));
+    }
+    getIncomingIdCandidates(message) {
+        const raw = message.raw ?? {};
+        const candidates = [
+            message.from,
+            String(raw.chatId ?? ''),
+            String(raw.sender ?? ''),
+            String(raw.from ?? ''),
+            String(raw.fromId ?? ''),
+        ].map(value => value.trim()).filter(Boolean);
+        return Array.from(new Set(candidates));
+    }
+    expandComparableIds(input) {
+        const value = String(input ?? '').trim().toLowerCase();
+        if (!value) {
+            return [];
+        }
+        const digits = value.replace(/\D/g, '');
+        return Array.from(new Set([value, digits].filter(Boolean)));
+    }
+    buildChildMessage(task, run, isReminder) {
+        const lines = [];
+        lines.push(isReminder ? `Erinnerung: ${task.message}` : task.message);
+        lines.push('');
+        const replyLink = this.buildReplyLink(`erledigt #${run.refCode}`);
+        if (replyLink) {
+            lines.push('✅ Einfach hier tippen und senden:');
+            lines.push(replyLink);
+            lines.push('');
+            lines.push('Alternativ reicht meistens auch einfach: erledigt');
+        }
+        else {
+            lines.push(`Bitte antworte mit: erledigt #${run.refCode}`);
+            lines.push('Alternativ reicht meistens auch einfach: erledigt');
+        }
+        return lines.join('\n');
+    }
+    buildParentMessage(task, run, isReminder) {
+        const lines = [];
+        lines.push(isReminder ? `Erinnerung zur Bestätigung: ${task.title}` : `${task.title} wurde als erledigt gemeldet.`);
+        lines.push('');
+        const replyLink = this.buildReplyLink(`ja #${run.refCode}`);
+        if (replyLink) {
+            lines.push('✅ Zum Bestätigen einfach hier tippen und senden:');
+            lines.push(replyLink);
+            lines.push('');
+            lines.push('Alternativ reicht meistens auch einfach: ja');
+        }
+        else {
+            lines.push(`Bitte bestätigen mit: ja #${run.refCode}`);
+            lines.push('Alternativ reicht meistens auch einfach: ja');
+        }
+        return lines.join('\n');
+    }
+    buildReplyLink(replyText) {
+        const phone = this.cfg.replyLinkPhone?.replace(/\D/g, '') ?? '';
+        if (!phone) {
+            return null;
+        }
+        return `https://wa.me/${phone}?text=${encodeURIComponent(replyText)}`;
+    }
     async sendChildReminder(task, run) {
-        await this.sendWhatsApp(task.childChatId, `Erinnerung: ${task.message}\n\nBitte antworte mit: erledigt #${run.refCode}`);
+        await this.sendWhatsApp(task.childChatId, this.buildChildMessage(task, run, true));
         run.lastChildSendAt = new Date().toISOString();
         run.childReminderCount += 1;
         await this.writeHistory({
@@ -444,7 +514,7 @@ class ReminderAdapter extends adapter_core_1.Adapter {
         await this.syncTaskStates(task.id);
     }
     async sendParentReminder(task, run) {
-        await this.sendWhatsApp(task.parentChatId, `Bitte bestätigen: ${task.title}\nAntwort mit: ja #${run.refCode}`);
+        await this.sendWhatsApp(task.parentChatId, this.buildParentMessage(task, run, true));
         run.lastParentSendAt = new Date().toISOString();
         run.parentReminderCount += 1;
         await this.writeHistory({

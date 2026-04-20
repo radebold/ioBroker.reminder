@@ -57,5 +57,6 @@ export interface AdapterConfig {
     incomingStateId: string;
     historyLimit: number;
     logIncomingMessages: boolean;
+    replyLinkPhone: string;
     tasks: Array<Record<string, unknown>>;
 }
