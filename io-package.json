@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "news": {
+      "0.0.2": {
+        "en": "Install fix for GitHub URL installs. Prepack removed so ioBroker can install directly from the repository.",
+        "de": "Installationsfix für GitHub-URL-Installationen. Prepack entfernt, damit ioBroker direkt aus dem Repository installieren kann."
+      },
       "0.0.1": {
         "en": "Initial version with weekly WhatsApp reminders, child replies and parent confirmation.",
         "de": "Erste Version mit wöchentlichen WhatsApp-Erinnerungen, Rückmeldung des Kindes und Bestätigung durch Papa."
