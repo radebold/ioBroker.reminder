@@ -79,69 +79,82 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Each row defines one recurring task. For replies use the exact WhatsApp chat ID when needed. If your incoming payload uses values like ...@lid, copy exactly that value from info.lastIncoming instead of only the phone number.",
-            "de": "Jede Zeile definiert eine wiederkehrende Aufgabe. Für Antworten verwende bei Bedarf die exakte WhatsApp-Chat-ID. Wenn im eingehenden Payload Werte wie ...@lid auftauchen, kopiere genau diesen Wert aus info.lastIncoming statt nur der Telefonnummer."
+            "en": "Each task now opens as a separate card so the fields are easier to read and edit. For replies use the exact WhatsApp chat ID when needed. If your incoming payload uses values like ...@lid, copy exactly that value from info.lastIncoming instead of only the phone number.",
+            "de": "Jede Aufgabe öffnet sich jetzt als eigene Karte, damit die Felder besser lesbar und editierbar sind. Für Antworten verwende bei Bedarf die exakte WhatsApp-Chat-ID. Wenn im eingehenden Payload Werte wie ...@lid auftauchen, kopiere genau diesen Wert aus info.lastIncoming statt nur der Telefonnummer."
           }
         },
         "tasks": {
-          "type": "table",
+          "type": "accordion",
           "sm": 12,
-          "compact": true,
-          "showSecondAddAt": 3,
           "clone": "id",
-          "titleAttribute": "title",
-          "uniqueColumns": [
-            "id"
-          ],
+          "titleAttr": "title",
           "items": [
             {
               "type": "checkbox",
               "attr": "enabled",
-              "title": {
-                "en": "On",
-                "de": "Aktiv"
+              "label": {
+                "en": "Task active",
+                "de": "Aufgabe aktiv"
               },
-              "width": 70,
-              "default": true
+              "xs": 12,
+              "sm": 12,
+              "md": 3,
+              "default": true,
+              "newLine": true
             },
             {
               "type": "text",
               "attr": "id",
-              "title": {
-                "en": "ID",
-                "de": "ID"
+              "label": {
+                "en": "Internal ID",
+                "de": "Interne ID"
               },
-              "width": 120,
+              "help": {
+                "en": "Use a stable short ID, for example treppe.",
+                "de": "Verwende eine stabile kurze ID, z. B. treppe."
+              },
+              "xs": 12,
+              "sm": 12,
+              "md": 3,
               "default": "task-1"
             },
             {
               "type": "text",
               "attr": "title",
-              "title": {
+              "label": {
                 "en": "Title",
                 "de": "Titel"
               },
-              "width": "15%",
+              "xs": 12,
+              "sm": 12,
+              "md": 6,
               "default": "Treppe absaugen"
             },
             {
               "type": "text",
               "attr": "message",
-              "title": {
-                "en": "Message",
-                "de": "Nachricht"
+              "label": {
+                "en": "Message text",
+                "de": "Nachrichtentext"
               },
-              "width": "20%",
-              "default": "Bitte die Treppe absaugen."
+              "xs": 12,
+              "sm": 12,
+              "md": 12,
+              "default": "Bitte die Treppe absaugen.",
+              "minRows": 2,
+              "maxRows": 4,
+              "newLine": true
             },
             {
               "type": "select",
               "attr": "weekday",
-              "title": {
+              "label": {
                 "en": "Weekday",
                 "de": "Wochentag"
               },
-              "width": 120,
+              "xs": 12,
+              "sm": 6,
+              "md": 3,
               "default": 3,
               "options": [
                 { "label": { "en": "Sunday", "de": "Sonntag" }, "value": 0 },
@@ -151,46 +164,31 @@
                 { "label": { "en": "Thursday", "de": "Donnerstag" }, "value": 4 },
                 { "label": { "en": "Friday", "de": "Freitag" }, "value": 5 },
                 { "label": { "en": "Saturday", "de": "Samstag" }, "value": 6 }
-              ]
+              ],
+              "newLine": true
             },
             {
               "type": "text",
               "attr": "time",
-              "title": {
-                "en": "Time HH:mm",
-                "de": "Uhrzeit HH:mm"
+              "label": {
+                "en": "Time (HH:mm)",
+                "de": "Uhrzeit (HH:mm)"
               },
-              "width": 100,
+              "xs": 12,
+              "sm": 6,
+              "md": 3,
               "default": "17:00"
-            },
-            {
-              "type": "text",
-              "attr": "childChatId",
-              "title": {
-                "en": "Child chat ID",
-                "de": "Chat-ID Kind"
-              },
-              "width": "14%",
-              "default": "4917012345678@c.us"
-            },
-            {
-              "type": "text",
-              "attr": "parentChatId",
-              "title": {
-                "en": "Parent chat ID",
-                "de": "Chat-ID Papa"
-              },
-              "width": "14%",
-              "default": "4917099999999@c.us"
             },
             {
               "type": "number",
               "attr": "childReminderHours",
-              "title": {
-                "en": "Child reminder h",
-                "de": "Erinnerung Kind h"
+              "label": {
+                "en": "Reminder interval child (hours)",
+                "de": "Erinnerungsintervall Kind (Stunden)"
               },
-              "width": 110,
+              "xs": 12,
+              "sm": 6,
+              "md": 3,
               "default": 3,
               "min": 1,
               "max": 168
@@ -198,33 +196,81 @@
             {
               "type": "number",
               "attr": "parentReminderHours",
-              "title": {
-                "en": "Parent reminder h",
-                "de": "Erinnerung Papa h"
+              "label": {
+                "en": "Reminder interval parent (hours)",
+                "de": "Erinnerungsintervall Papa (Stunden)"
               },
-              "width": 110,
+              "xs": 12,
+              "sm": 6,
+              "md": 3,
               "default": 3,
               "min": 1,
               "max": 168
             },
             {
               "type": "text",
+              "attr": "childChatId",
+              "label": {
+                "en": "Child chat ID",
+                "de": "Chat-ID Kind"
+              },
+              "help": {
+                "en": "Use the exact incoming value, for example 165235998597365@lid.",
+                "de": "Verwende den exakten eingehenden Wert, z. B. 165235998597365@lid."
+              },
+              "xs": 12,
+              "sm": 12,
+              "md": 6,
+              "newLine": true,
+              "default": "4917012345678@c.us"
+            },
+            {
+              "type": "text",
+              "attr": "parentChatId",
+              "label": {
+                "en": "Parent chat ID",
+                "de": "Chat-ID Papa"
+              },
+              "help": {
+                "en": "Use the exact incoming value from info.lastIncoming.",
+                "de": "Verwende den exakten eingehenden Wert aus info.lastIncoming."
+              },
+              "xs": 12,
+              "sm": 12,
+              "md": 6,
+              "default": "4917099999999@c.us"
+            },
+            {
+              "type": "text",
               "attr": "childKeywords",
-              "title": {
+              "label": {
                 "en": "Child keywords",
                 "de": "Schlüsselwörter Kind"
               },
-              "width": "12%",
+              "help": {
+                "en": "Comma separated, for example erledigt,fertig,done",
+                "de": "Kommagetrennt, z. B. erledigt,fertig,done"
+              },
+              "xs": 12,
+              "sm": 12,
+              "md": 6,
+              "newLine": true,
               "default": "erledigt,fertig,done"
             },
             {
               "type": "text",
               "attr": "parentKeywords",
-              "title": {
+              "label": {
                 "en": "Parent keywords",
                 "de": "Schlüsselwörter Papa"
               },
-              "width": "12%",
+              "help": {
+                "en": "Comma separated, for example ja,bestaetigt,bestätigt,ok",
+                "de": "Kommagetrennt, z. B. ja,bestaetigt,bestätigt,ok"
+              },
+              "xs": 12,
+              "sm": 12,
+              "md": 6,
               "default": "ja,bestaetigt,bestätigt,ok"
             }
           ]
