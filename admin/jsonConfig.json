@@ -25,7 +25,9 @@
             "en": "open-wa instance",
             "de": "open-wa Instanz"
           },
-          "sm": 4
+          "xs": 12,
+          "sm": 12,
+          "md": 4
         },
         "incomingStateId": {
           "type": "text",
@@ -33,7 +35,9 @@
             "en": "Incoming message state ID",
             "de": "State-ID für eingehende Nachrichten"
           },
-          "sm": 4
+          "xs": 12,
+          "sm": 12,
+          "md": 4
         },
         "replyLinkPhone": {
           "type": "text",
@@ -45,7 +49,9 @@
             "en": "Optional. Enter the number of the WhatsApp account behind open-wa in international format without spaces, for example 491791514520. The adapter will build wa.me links that already contain the reply text.",
             "de": "Optional. Trage die Nummer des WhatsApp-Kontos hinter open-wa im internationalen Format ohne Leerzeichen ein, z. B. 491791514520. Der Adapter baut dann wa.me-Links mit bereits vorbereiteter Antwort."
           },
-          "sm": 4
+          "xs": 12,
+          "sm": 12,
+          "md": 4
         },
         "historyLimit": {
           "type": "number",
@@ -55,7 +61,10 @@
           },
           "min": 10,
           "max": 1000,
-          "sm": 3
+          "xs": 12,
+          "sm": 4,
+          "md": 3,
+          "newLine": true
         },
         "logIncomingMessages": {
           "type": "checkbox",
@@ -63,7 +72,32 @@
             "en": "Store last incoming message in info.lastIncoming",
             "de": "Letzte eingehende Nachricht in info.lastIncoming speichern"
           },
-          "sm": 9
+          "xs": 12,
+          "sm": 8,
+          "md": 9
+        },
+        "participantsHint": {
+          "type": "staticText",
+          "newLine": true,
+          "sm": 12,
+          "text": {
+            "en": "How to get the WhatsApp IDs: let each person send one short message to the open-wa number. The adapter learns the sender automatically and offers the person in the dropdowns below by name.",
+            "de": "So bekommst du die WhatsApp-IDs: Jede Person sendet einmal kurz eine Nachricht an die open-wa-Nummer. Der Adapter lernt den Absender automatisch und bietet die Person danach unten im Dropdown mit Namen an."
+          }
+        },
+        "knownParticipantsPreview": {
+          "type": "textSendTo",
+          "command": "participantSummary",
+          "label": {
+            "en": "Learned WhatsApp contacts",
+            "de": "Gelernte WhatsApp-Kontakte"
+          },
+          "container": "text",
+          "copyToClipboard": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "newLine": true
         }
       }
     },
@@ -79,8 +113,8 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Each task now opens as a separate card so the fields are easier to read and edit. For replies use the exact WhatsApp chat ID when needed. If your incoming payload uses values like ...@lid, copy exactly that value from info.lastIncoming instead of only the phone number.",
-            "de": "Jede Aufgabe öffnet sich jetzt als eigene Karte, damit die Felder besser lesbar und editierbar sind. Für Antworten verwende bei Bedarf die exakte WhatsApp-Chat-ID. Wenn im eingehenden Payload Werte wie ...@lid auftauchen, kopiere genau diesen Wert aus info.lastIncoming statt nur der Telefonnummer."
+            "en": "Each task opens as its own card so the fields are easier to read. For child and parent you can either choose a learned WhatsApp contact from the dropdown or manually type an ID like ...@lid or ...@c.us.",
+            "de": "Jede Aufgabe öffnet sich als eigene Karte, damit die Felder besser lesbar sind. Für Kind und Papa kannst du entweder einen gelernten WhatsApp-Kontakt aus dem Dropdown wählen oder manuell eine ID wie ...@lid oder ...@c.us eintragen."
           }
         },
         "tasks": {
@@ -208,37 +242,43 @@
               "max": 168
             },
             {
-              "type": "text",
+              "type": "selectSendTo",
               "attr": "childChatId",
+              "command": "participantOptions",
+              "manual": true,
+              "noTranslation": true,
               "label": {
-                "en": "Child chat ID",
-                "de": "Chat-ID Kind"
+                "en": "Child contact / chat ID",
+                "de": "Kind-Kontakt / Chat-ID"
               },
               "help": {
-                "en": "Use the exact incoming value, for example 165235998597365@lid.",
-                "de": "Verwende den exakten eingehenden Wert, z. B. 165235998597365@lid."
+                "en": "Choose a learned WhatsApp contact or type manually, for example 165235998597365@lid.",
+                "de": "Wähle einen gelernten WhatsApp-Kontakt oder trage manuell ein, z. B. 165235998597365@lid."
               },
               "xs": 12,
               "sm": 12,
               "md": 6,
               "newLine": true,
-              "default": "4917012345678@c.us"
+              "default": ""
             },
             {
-              "type": "text",
+              "type": "selectSendTo",
               "attr": "parentChatId",
+              "command": "participantOptions",
+              "manual": true,
+              "noTranslation": true,
               "label": {
-                "en": "Parent chat ID",
-                "de": "Chat-ID Papa"
+                "en": "Parent contact / chat ID",
+                "de": "Papa-Kontakt / Chat-ID"
               },
               "help": {
-                "en": "Use the exact incoming value from info.lastIncoming.",
-                "de": "Verwende den exakten eingehenden Wert aus info.lastIncoming."
+                "en": "Choose a learned WhatsApp contact or type manually.",
+                "de": "Wähle einen gelernten WhatsApp-Kontakt oder trage manuell ein."
               },
               "xs": 12,
               "sm": 12,
               "md": 6,
-              "default": "4917099999999@c.us"
+              "default": ""
             },
             {
               "type": "text",
