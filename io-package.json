@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "news": {
+      "0.0.6": {
+        "en": "Learn WhatsApp participants automatically from incoming messages and offer them by name in dropdowns for child and parent selection.",
+        "de": "WhatsApp-Teilnehmer werden jetzt automatisch aus eingehenden Nachrichten gelernt und in Dropdowns mit Namen für Kind- und Papa-Auswahl angeboten."
+      },
       "0.0.5": {
         "en": "Added restart helpers: resetAllRuns and config reload commands, automatic cleanup of stale runs after config changes, normalized outgoing recipients, and clearer lastAction diagnostics.",
         "de": "Neustart-Helfer ergänzt: resetAllRuns- und Konfig-Neuladen-Befehle, automatische Bereinigung veralteter Läufe nach Konfigurationsänderungen, Normalisierung ausgehender Empfänger und klarere lastAction-Diagnosen."
@@ -131,6 +135,19 @@
         "read": true,
         "write": false,
         "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.knownParticipantsJson",
+      "type": "state",
+      "common": {
+        "name": "Known participants as JSON",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": "[]"
       },
       "native": {}
     },
