@@ -11,6 +11,7 @@ const DEFAULT_STORE = {
     runs: {},
     taskMemory: {},
     history: [],
+    knownParticipants: {},
     lastMessageFingerprint: undefined,
 };
 async function loadRuntimeStore(dataDir) {
@@ -22,6 +23,7 @@ async function loadRuntimeStore(dataDir) {
             runs: parsed.runs ?? {},
             taskMemory: parsed.taskMemory ?? {},
             history: Array.isArray(parsed.history) ? parsed.history : [],
+            knownParticipants: parsed.knownParticipants ?? {},
             lastMessageFingerprint: parsed.lastMessageFingerprint,
         };
     }
