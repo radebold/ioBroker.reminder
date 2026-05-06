@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": "Added restart helpers: resetAllRuns and config reload commands, automatic cleanup of stale runs after config changes, normalized outgoing recipients, and clearer lastAction diagnostics.",
+        "de": "Neustart-Helfer ergänzt: resetAllRuns- und Konfig-Neuladen-Befehle, automatische Bereinigung veralteter Läufe nach Konfigurationsänderungen, Normalisierung ausgehender Empfänger und klarere lastAction-Diagnosen."
+      },
       "0.0.3": {
         "en": "Added click-to-reply wa.me links, improved incoming ID matching and ISO timestamp parsing.",
         "de": "Klick-Antworten per wa.me-Link, verbesserter Abgleich eingehender IDs und Parsing von ISO-Zeitstempeln ergänzt."
@@ -182,6 +186,32 @@
         "read": true,
         "write": true,
         "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "commands.resetAllRuns",
+      "type": "state",
+      "common": {
+        "name": "Reset all active runs",
+        "type": "boolean",
+        "role": "button",
+        "read": false,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "commands.reloadConfig",
+      "type": "state",
+      "common": {
+        "name": "Reload configuration",
+        "type": "boolean",
+        "role": "button",
+        "read": false,
+        "write": true,
+        "def": false
       },
       "native": {}
     }
