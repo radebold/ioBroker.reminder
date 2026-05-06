@@ -14,8 +14,8 @@
           "newLine": true,
           "sm": 12,
           "text": {
-            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder.X', 'incoming', payload). Optional wa.me links can be generated so the child or parent can just tap a link and send the prepared reply.",
-            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder.X', 'incoming', payload) angeliefert werden. Optional können wa.me-Links erzeugt werden, damit Kind oder Papa nur noch auf einen Link tippen und die vorbereitete Antwort senden müssen."
+            "en": "Outgoing messages are sent via open-wa using sendTo(instance, 'send', {to, text}). Incoming replies can either be delivered through the configured state path or via sendTo('reminder.X', 'incoming', payload). Optional wa.me links can be generated so the child or parent can just tap a link and send the prepared reply. For a clean restart without deleting the instance, you can set reminder.0.commands.resetAllRuns to true.",
+            "de": "Ausgehende Nachrichten werden über open-wa mit sendTo(instance, 'send', {to, text}) gesendet. Eingehende Antworten können entweder über den konfigurierten State-Pfad oder per sendTo('reminder.X', 'incoming', payload) angeliefert werden. Optional können wa.me-Links erzeugt werden, damit Kind oder Papa nur noch auf einen Link tippen und die vorbereitete Antwort senden müssen. Für einen sauberen Neustart ohne Löschen der Instanz kannst du reminder.0.commands.resetAllRuns auf true setzen."
           }
         },
         "openWaInstance": {
