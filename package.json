@@ -1,6 +1,6 @@
 {
   "name": "iobroker.reminder",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Rhythmic WhatsApp reminders for children with parent confirmation workflow",
   "author": {
     "name": "Thomas Radebold"
@@ -23,7 +23,7 @@
     "children",
     "household"
   ],
-  "main": "build/main.js",
+  "main": "build/main.v007.js",
   "types": "build/main.d.ts",
   "files": [
     "admin/",
