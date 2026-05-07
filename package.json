@@ -1,6 +1,6 @@
 {
   "name": "iobroker.reminder",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Rhythmic WhatsApp reminders for children with parent confirmation workflow",
   "author": {
     "name": "Thomas Radebold"
