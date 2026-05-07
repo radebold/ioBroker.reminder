@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "news": {
+      "0.0.8": {
+        "en": "Prominent task status overview added to the admin UI and version bumped for cache-safe rollout.",
+        "de": "Prominente Statusübersicht der Aufgaben in der Admin-Oberfläche ergänzt und Version für cache-sicheres Ausrollen erhöht."
+      },
       "0.0.7": {
         "en": "Fixed active runtime: sending now uses phone numbers, reply matching uses reply IDs with phone fallback, all displayed times are local, and the admin UI now includes a task status overview.",
         "de": "Aktive Laufzeit korrigiert: Der Versand nutzt jetzt Telefonnummern, die Antwortzuordnung nutzt Antwort-IDs mit Telefonnummer als Fallback, alle angezeigten Zeiten sind lokal, und die Admin-Oberfläche enthält jetzt eine Statusübersicht der Aufgaben."
