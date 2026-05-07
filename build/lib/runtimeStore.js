@@ -36,4 +36,3 @@ async function saveRuntimeStore(dataDir, store) {
     const fileName = node_path_1.default.join(dataDir, 'runtime-store.json');
     await (0, promises_1.writeFile)(fileName, JSON.stringify(store, null, 2), 'utf-8');
 }
-//# sourceMappingURL=runtimeStore.js.map
