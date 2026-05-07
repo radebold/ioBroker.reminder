@@ -7,8 +7,10 @@ export interface TaskConfig {
   message: string;
   weekday: number;
   time: string;
-  childChatId: string;
-  parentChatId: string;
+  childReplyId: string;
+  parentReplyId: string;
+  childSendNumber: string;
+  parentSendNumber: string;
   childReminderHours: number;
   parentReminderHours: number;
   childKeywords: string[];
@@ -52,10 +54,21 @@ export interface TaskMemory {
   lastScheduleDate?: string;
 }
 
+export interface KnownParticipant {
+  id: string;
+  displayName: string;
+  phoneNumber?: string;
+  sourceType?: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  seenCount: number;
+}
+
 export interface PersistedStore {
   runs: Record<string, ActiveRun>;
   taskMemory: Record<string, TaskMemory>;
   history: HistoryEntry[];
+  knownParticipants: Record<string, KnownParticipant>;
   lastMessageFingerprint?: string;
 }
 
