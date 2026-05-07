@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "news": {
+      "0.0.7": {
+        "en": "Fixed active runtime: sending now uses phone numbers, reply matching uses reply IDs with phone fallback, all displayed times are local, and the admin UI now includes a task status overview.",
+        "de": "Aktive Laufzeit korrigiert: Der Versand nutzt jetzt Telefonnummern, die Antwortzuordnung nutzt Antwort-IDs mit Telefonnummer als Fallback, alle angezeigten Zeiten sind lokal, und die Admin-Oberfläche enthält jetzt eine Statusübersicht der Aufgaben."
+      },
       "0.0.6": {
         "en": "Learn WhatsApp participants automatically from incoming messages and offer them by name in dropdowns for child and parent selection.",
         "de": "WhatsApp-Teilnehmer werden jetzt automatisch aus eingehenden Nachrichten gelernt und in Dropdowns mit Namen für Kind- und Papa-Auswahl angeboten."
@@ -80,8 +84,10 @@
         "message": "Bitte die Treppe absaugen.",
         "weekday": 3,
         "time": "17:00",
-        "childChatId": "120000000000000000@g.us",
-        "parentChatId": "4917012345678@c.us",
+        "childSendNumber": "4917012345678",
+        "childReplyId": "165235998597365@lid",
+        "parentSendNumber": "4917099999999",
+        "parentReplyId": "3264309387362@lid",
         "childReminderHours": 3,
         "parentReminderHours": 3,
         "childKeywords": "erledigt,fertig,done",
@@ -148,6 +154,19 @@
         "read": true,
         "write": false,
         "def": "[]"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.systemTimeZone",
+      "type": "state",
+      "common": {
+        "name": "System time zone",
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "def": ""
       },
       "native": {}
     },
