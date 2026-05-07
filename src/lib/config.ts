@@ -70,6 +70,10 @@ function normalizeTime(value: unknown): string {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
+function normalizePhone(value: unknown): string {
+  return toStringValue(value).replace(/[^\d+]/g, '');
+}
+
 function normalizeReplyLinkPhone(value: unknown): string {
   return toStringValue(value).replace(/\D/g, '');
 }
@@ -106,8 +110,10 @@ export function normalizeTasks(rawTasks: Array<Record<string, unknown>>): TaskCo
       message: toStringValue(raw.message, `Please complete task ${index + 1}.`) || `Please complete task ${index + 1}.`,
       weekday: normalizeWeekday(raw.weekday),
       time: normalizeTime(raw.time),
-      childChatId: toStringValue(raw.childChatId),
-      parentChatId: toStringValue(raw.parentChatId),
+      childReplyId: toStringValue(raw.childReplyId || raw.childParticipantId || raw.childChatId),
+      parentReplyId: toStringValue(raw.parentReplyId || raw.parentParticipantId || raw.parentChatId),
+      childSendNumber: normalizePhone(raw.childSendNumber || raw.childPhoneNumber || raw.childPhone || raw.childNumber),
+      parentSendNumber: normalizePhone(raw.parentSendNumber || raw.parentPhoneNumber || raw.parentPhone || raw.parentNumber),
       childReminderHours: Math.max(1, toNumber(raw.childReminderHours, 3)),
       parentReminderHours: Math.max(1, toNumber(raw.parentReminderHours, 3)),
       childKeywords: normalizeKeywords(raw.childKeywords, ['erledigt', 'fertig', 'done']),
