@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "news": {
+      "0.0.9": {
+        "en": "Tasks can now run weekly, daily, or every X hours. The active runtime supports separate execution schedule and follow-up reminder intervals.",
+        "de": "Aufgaben können jetzt wöchentlich, täglich oder alle X Stunden laufen. Die aktive Laufzeit unterstützt damit getrennt den Ausführungszeitplan und die Nachfass-Erinnerungen."
+      },
       "0.0.8": {
         "en": "Prominent task status overview added to the admin UI and version bumped for cache-safe rollout.",
         "de": "Prominente Statusübersicht der Aufgaben in der Admin-Oberfläche ergänzt und Version für cache-sicheres Ausrollen erhöht."
@@ -86,8 +90,10 @@
         "id": "treppe",
         "title": "Treppe absaugen",
         "message": "Bitte die Treppe absaugen.",
+        "scheduleType": "weekly",
         "weekday": 3,
         "time": "17:00",
+        "intervalHours": 3,
         "childSendNumber": "4917012345678",
         "childReplyId": "165235998597365@lid",
         "parentSendNumber": "4917099999999",
