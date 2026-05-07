@@ -6,6 +6,7 @@ const DEFAULT_STORE: PersistedStore = {
   runs: {},
   taskMemory: {},
   history: [],
+  knownParticipants: {},
   lastMessageFingerprint: undefined,
 };
 
@@ -18,6 +19,7 @@ export async function loadRuntimeStore(dataDir: string): Promise<PersistedStore>
       runs: parsed.runs ?? {},
       taskMemory: parsed.taskMemory ?? {},
       history: Array.isArray(parsed.history) ? parsed.history : [],
+      knownParticipants: parsed.knownParticipants ?? {},
       lastMessageFingerprint: parsed.lastMessageFingerprint,
     };
   } catch {
