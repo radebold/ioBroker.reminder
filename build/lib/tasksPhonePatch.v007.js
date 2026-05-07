@@ -26,6 +26,23 @@ function mapTask(raw = {}, index = 0) {
     parentKeywords: toKeywords(raw.parentKeywords, ["ja", "bestätigt", "bestaetigt", "ok"])
   };
 }
+function buildRecipientVariants(value) {
+  const raw = String(value || "").trim();
+  const digits = raw.replace(/\D/g, "");
+  const variants = [];
+  const add = v => {
+    const txt = String(v || "").trim();
+    if (txt && !variants.includes(txt)) variants.push(txt);
+  };
+  add(raw);
+  if (digits) {
+    add(digits);
+    add(`+${digits}`);
+    add(`${digits}@c.us`);
+    add(`+${digits}@c.us`);
+  }
+  return variants;
+}
 function applyTaskRuntimePatches(adapter) {
   adapter.loadTasksFromConfig = async function () {
     this.cfg = normalizeAdapterConfig(this.config);
@@ -39,12 +56,21 @@ function applyTaskRuntimePatches(adapter) {
     }
   };
   adapter.sendWhatsApp = async function (to, text) {
-    const trimmed = String(to || "").trim();
-    const digits = trimmed.replace(/\D/g, "");
-    if (!digits) throw new Error("No recipient provided");
-    const normalized = trimmed.includes("@c.us") ? trimmed : `${digits}@c.us`;
-    this.log.debug(`Sending WhatsApp message to ${normalized}`);
-    await this.sendToAsync(this.cfg.openWaInstance, "send", { to: normalized, text });
+    const variants = buildRecipientVariants(to);
+    if (!variants.length) throw new Error("No recipient provided");
+    let lastError = null;
+    for (const recipient of variants) {
+      try {
+        this.log.debug(`Trying WhatsApp message to ${recipient}`);
+        await this.sendToAsync(this.cfg.openWaInstance, "send", { to: recipient, text });
+        this.log.debug(`WhatsApp send accepted for ${recipient}`);
+        return;
+      } catch (error) {
+        lastError = error;
+        this.log.warn(`WhatsApp send failed for ${recipient}: ${error && error.message ? error.message : String(error)}`);
+      }
+    }
+    throw lastError || new Error("WhatsApp send failed for all recipient variants");
   };
   adapter.matchesTaskParticipant = function (replyId, message, fallbackPhone) {
     const configuredKeys = new Set();
@@ -94,7 +120,17 @@ function applyTaskRuntimePatches(adapter) {
     const run = { runId: `${task.id}-${Date.now()}`, taskId: task.id, refCode: this.createRefCode(task), status: "waiting_child", reason, scheduledDate: today, startedAt: nowIso, lastChildSendAt: nowIso, childReminderCount: 0, parentReminderCount: 0 };
     this.runs.set(run.runId, run);
     this.taskMemory.set(task.id, { lastScheduleDate: today });
-    await this.sendWhatsApp(task.childSendNumber, this.buildChildMessage(task, run, false));
+    try {
+      await this.sendWhatsApp(task.childSendNumber, this.buildChildMessage(task, run, false));
+    } catch (error) {
+      this.runs.delete(run.runId);
+      this.taskMemory.set(task.id, {});
+      await this.persistData();
+      await this.syncOverviewStates();
+      await this.syncTaskStates(task.id);
+      await this.writeLastAction(`Failed to send child message for ${task.id}: ${error && error.message ? error.message : String(error)}`);
+      throw error;
+    }
     await this.writeHistory({ timestamp: nowIso, type: "started", taskId: task.id, refCode: run.refCode, status: run.status, details: `${reason} | ${task.time}` });
     await this.writeLastAction(`Task ${task.id} started with ref ${run.refCode}`);
     await this.persistData();
@@ -102,7 +138,12 @@ function applyTaskRuntimePatches(adapter) {
     await this.syncTaskStates(task.id);
   };
   adapter.sendChildReminder = async function (task, run) {
-    await this.sendWhatsApp(task.childSendNumber, this.buildChildMessage(task, run, true));
+    try {
+      await this.sendWhatsApp(task.childSendNumber, this.buildChildMessage(task, run, true));
+    } catch (error) {
+      await this.writeLastAction(`Failed to send child reminder for ${task.id}: ${error && error.message ? error.message : String(error)}`);
+      throw error;
+    }
     run.lastChildSendAt = new Date().toISOString();
     run.childReminderCount += 1;
     await this.writeHistory({ timestamp: new Date().toISOString(), type: "child_reminder", taskId: task.id, refCode: run.refCode, status: run.status, details: `Count ${run.childReminderCount}` });
@@ -112,7 +153,12 @@ function applyTaskRuntimePatches(adapter) {
     await this.syncTaskStates(task.id);
   };
   adapter.sendParentReminder = async function (task, run) {
-    await this.sendWhatsApp(task.parentSendNumber, this.buildParentMessage(task, run, true));
+    try {
+      await this.sendWhatsApp(task.parentSendNumber, this.buildParentMessage(task, run, true));
+    } catch (error) {
+      await this.writeLastAction(`Failed to send parent reminder for ${task.id}: ${error && error.message ? error.message : String(error)}`);
+      throw error;
+    }
     run.lastParentSendAt = new Date().toISOString();
     run.parentReminderCount += 1;
     await this.writeHistory({ timestamp: new Date().toISOString(), type: "parent_reminder", taskId: task.id, refCode: run.refCode, status: run.status, details: `Count ${run.parentReminderCount}` });
