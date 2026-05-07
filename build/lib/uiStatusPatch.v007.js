@@ -41,7 +41,8 @@ function applyUiStatusPatches(adapter) {
     await this.setStateChangedAsync(`${baseId}.childReminderCount`, { val: displayedRun ? displayedRun.childReminderCount || 0 : 0, ack: true });
     await this.setStateChangedAsync(`${baseId}.parentReminderCount`, { val: displayedRun ? displayedRun.parentReminderCount || 0 : 0, ack: true });
     await this.setStateChangedAsync(`${baseId}.lastScheduleDate`, { val: memory.lastScheduleDate || "", ack: true });
-    const summary = run ? `${task.title}: ${run.status} (${run.refCode}) | ${formatLocalDateTime(run.startedAt)}` : displayedRun && displayedRun.status === "confirmed" ? `${task.title}: confirmed (${displayedRun.refCode}) | ${formatLocalDateTime(displayedRun.parentConfirmedAt || displayedRun.startedAt)}` : `${task.title}: idle`;
+    const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
+    const summary = run ? `${task.title}: ${run.status} (${run.refCode}) | ${schedule} | ${formatLocalDateTime(run.startedAt)}` : displayedRun && displayedRun.status === "confirmed" ? `${task.title}: confirmed (${displayedRun.refCode}) | ${schedule} | ${formatLocalDateTime(displayedRun.parentConfirmedAt || displayedRun.startedAt)}` : `${task.title}: idle | ${schedule}`;
     await this.setStateChangedAsync(`${baseId}.summary`, { val: summary, ack: true });
   };
   adapter.writeLastAction = async function (message) {
@@ -52,18 +53,41 @@ function applyUiStatusPatches(adapter) {
     if (!this.tasks.size) return { text: "Keine Aufgaben konfiguriert.", style: { whiteSpace: "pre-wrap" } };
     for (const task of this.tasks.values()) {
       const run = this.getOpenRunForTask(task.id);
+      const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
       lines.push(`• ${task.title} [${task.id}]`);
       lines.push(`  Status: ${run ? run.status : "idle"}`);
-      lines.push(`  Zeitplan: ${task.time}`);
+      lines.push(`  Zeitplan: ${schedule}`);
       lines.push(`  Versand Kind: ${task.childSendNumber || "-"}`);
       lines.push(`  Antwort Kind: ${task.childReplyId || "-"}`);
       lines.push(`  Versand Papa: ${task.parentSendNumber || "-"}`);
       lines.push(`  Antwort Papa: ${task.parentReplyId || "-"}`);
+      lines.push(`  Follow-up Kind/Papa: ${task.childReminderHours || 0}h / ${task.parentReminderHours || 0}h`);
       if (run) lines.push(`  Referenz: ${run.refCode}`);
       lines.push("");
     }
     return { text: lines.join("\n").trimEnd(), style: { whiteSpace: "pre-wrap" } };
   };
+  adapter.getHistoryOverview = function () {
+    const history = Array.isArray(this.history) ? this.history.slice(-this.cfg.historyLimit).reverse() : [];
+    if (!history.length) {
+      return { text: "Noch keine Protokolleinträge vorhanden.", style: { whiteSpace: "pre-wrap" } };
+    }
+    const lines = ["Protokoll:", ""];
+    for (const entry of history) {
+      lines.push(`${formatLocalDateTime(entry.timestamp)} | ${entry.type} | ${entry.taskId} | ${entry.refCode} | ${entry.details || ""}`.trim());
+    }
+    return { text: lines.join("\n"), style: { whiteSpace: "pre-wrap" } };
+  };
+  adapter.on("message", obj => {
+    if (!obj || !obj.callback) return;
+    if (obj.command === "statusOverview") {
+      adapter.sendTo(obj.from, obj.command, adapter.getStatusOverview(), obj.callback);
+      return;
+    }
+    if (obj.command === "historyOverview") {
+      adapter.sendTo(obj.from, obj.command, adapter.getHistoryOverview(), obj.callback);
+    }
+  });
   return adapter;
 }
 module.exports = { applyUiStatusPatches, formatLocalDateTime };
