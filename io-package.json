@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "news": {
+      "0.0.15": {
+        "en": "Status now clearly shows whether an active run still exists after reset. History labels for resets were also clarified.",
+        "de": "Der Status zeigt jetzt klar, ob nach einem Reset noch ein aktiver Lauf existiert. Außerdem wurden die Historie-Bezeichnungen für Resets deutlicher gemacht."
+      },
       "0.0.14": {
         "en": "Added task action buttons in the admin UI and switched reply contacts to autocomplete-based selection.",
         "de": "Aktionsknöpfe pro Aufgabe in der Admin-Oberfläche ergänzt und die Antwortkontakte auf eine Autocomplete-Auswahl umgestellt."
