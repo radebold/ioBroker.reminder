@@ -22,7 +22,8 @@ function compactStatusLabel(status) {
   if (status === "waiting_child") return "wartet auf Kind";
   if (status === "waiting_parent") return "wartet auf Papa";
   if (status === "confirmed") return "bestätigt";
-  return status || "idle";
+  if (status === "idle") return "kein aktiver Lauf";
+  return status || "kein aktiver Lauf";
 }
 function applyUiStatusPatches(adapter) {
   const originalEnsureStaticStates = adapter.ensureStaticStates?.bind(adapter);
@@ -61,7 +62,11 @@ function applyUiStatusPatches(adapter) {
     await this.setStateChangedAsync(`${baseId}.parentReminderCount`, { val: displayedRun ? displayedRun.parentReminderCount || 0 : 0, ack: true });
     await this.setStateChangedAsync(`${baseId}.lastScheduleDate`, { val: memory.lastScheduleDate || "", ack: true });
     const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
-    const summary = run ? `${task.title} · ${compactStatusLabel(run.status)} · ${schedule} · ${shortDateTime(run.startedAt)}` : displayedRun && displayedRun.status === "confirmed" ? `${task.title} · bestätigt · ${schedule} · ${shortDateTime(displayedRun.parentConfirmedAt || displayedRun.startedAt)}` : `${task.title} · idle · ${schedule}`;
+    const summary = run
+      ? `${task.title} · aktiver Lauf: Ja · ${compactStatusLabel(run.status)} · ${schedule} · Ref ${run.refCode}`
+      : displayedRun && displayedRun.status === "confirmed"
+        ? `${task.title} · aktiver Lauf: Nein · bestätigt · ${schedule}`
+        : `${task.title} · aktiver Lauf: Nein · kein aktiver Lauf · ${schedule}`;
     await this.setStateChangedAsync(`${baseId}.summary`, { val: summary, ack: true });
   };
   adapter.writeLastAction = async function (message) {
@@ -73,11 +78,21 @@ function applyUiStatusPatches(adapter) {
     for (const task of this.tasks.values()) {
       const run = this.getOpenRunForTask(task.id);
       const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
-      const status = run ? compactStatusLabel(run.status) : "idle";
-      const ref = run ? ` · ${run.refCode}` : "";
-      lines.push(`${task.title} [${task.id}] · ${status} · ${schedule}${ref}`);
+      if (run) {
+        lines.push(`${task.title} [${task.id}]`);
+        lines.push(`Aktiver Lauf: Ja`);
+        lines.push(`Status: ${compactStatusLabel(run.status)}`);
+        lines.push(`Zeitplan: ${schedule}`);
+        lines.push(`Referenz: ${run.refCode}`);
+      } else {
+        lines.push(`${task.title} [${task.id}]`);
+        lines.push(`Aktiver Lauf: Nein`);
+        lines.push(`Status: kein aktiver Lauf`);
+        lines.push(`Zeitplan: ${schedule}`);
+      }
+      lines.push("");
     }
-    return { text: lines.join("\n"), style: { whiteSpace: "pre-wrap" } };
+    return { text: lines.join("\n").trim(), style: { whiteSpace: "pre-wrap" } };
   };
   adapter.getHistoryOverview = function () {
     const history = Array.isArray(this.history) ? this.history.slice(-6).reverse() : [];
@@ -88,7 +103,7 @@ function applyUiStatusPatches(adapter) {
       started: "gestartet",
       child_done: "Kind erledigt",
       parent_confirmed: "Papa bestätigt",
-      cancelled: "abgebrochen",
+      cancelled: "reset/abgebrochen",
       child_reminder: "Erinnerung Kind",
       parent_reminder: "Erinnerung Papa"
     };
