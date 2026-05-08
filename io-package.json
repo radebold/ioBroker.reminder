@@ -1,11 +1,15 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "news": {
+      "0.0.14": {
+        "en": "Added task action buttons in the admin UI and switched reply contacts to autocomplete-based selection.",
+        "de": "Aktionsknöpfe pro Aufgabe in der Admin-Oberfläche ergänzt und die Antwortkontakte auf eine Autocomplete-Auswahl umgestellt."
+      },
       "0.0.13": {
-        "en": "Reply contacts now use a real dropdown, and the interval field is only shown for interval schedules.",
-        "de": "Antwortkontakte nutzen jetzt ein echtes Dropdown, und das Feld für das Intervall wird nur noch bei Intervall-Zeitplänen angezeigt."
+        "en": "Reply contacts now use dropdown mode and the interval field is only shown for interval schedules.",
+        "de": "Antwortkontakte nutzen jetzt den Dropdown-Modus und das Intervall-Feld wird nur noch bei Intervall-Zeitplänen angezeigt."
       },
       "0.0.12": {
         "en": "Reply contact fields now force a real dropdown again instead of a plain editable field.",
