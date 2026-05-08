@@ -5,6 +5,25 @@ function formatLocalDateTime(value) {
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleString("de-DE", { hour12: false, timeZoneName: "short" });
 }
+function shortDateTime(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZoneName: "short"
+  });
+}
+function compactStatusLabel(status) {
+  if (status === "waiting_child") return "wartet auf Kind";
+  if (status === "waiting_parent") return "wartet auf Papa";
+  if (status === "confirmed") return "bestätigt";
+  return status || "idle";
+}
 function applyUiStatusPatches(adapter) {
   const originalEnsureStaticStates = adapter.ensureStaticStates?.bind(adapter);
   adapter.ensureStaticStates = async function () {
@@ -42,40 +61,38 @@ function applyUiStatusPatches(adapter) {
     await this.setStateChangedAsync(`${baseId}.parentReminderCount`, { val: displayedRun ? displayedRun.parentReminderCount || 0 : 0, ack: true });
     await this.setStateChangedAsync(`${baseId}.lastScheduleDate`, { val: memory.lastScheduleDate || "", ack: true });
     const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
-    const summary = run ? `${task.title}: ${run.status} (${run.refCode}) | ${schedule} | ${formatLocalDateTime(run.startedAt)}` : displayedRun && displayedRun.status === "confirmed" ? `${task.title}: confirmed (${displayedRun.refCode}) | ${schedule} | ${formatLocalDateTime(displayedRun.parentConfirmedAt || displayedRun.startedAt)}` : `${task.title}: idle | ${schedule}`;
+    const summary = run ? `${task.title} · ${compactStatusLabel(run.status)} · ${schedule} · ${shortDateTime(run.startedAt)}` : displayedRun && displayedRun.status === "confirmed" ? `${task.title} · bestätigt · ${schedule} · ${shortDateTime(displayedRun.parentConfirmedAt || displayedRun.startedAt)}` : `${task.title} · idle · ${schedule}`;
     await this.setStateChangedAsync(`${baseId}.summary`, { val: summary, ack: true });
   };
   adapter.writeLastAction = async function (message) {
     await this.setStateChangedAsync("info.lastAction", { val: `${formatLocalDateTime(new Date().toISOString())} | ${message}`, ack: true });
   };
   adapter.getStatusOverview = function () {
-    const lines = [`System-Zeitzone: ${this.systemTimeZone}`, ""];
     if (!this.tasks.size) return { text: "Keine Aufgaben konfiguriert.", style: { whiteSpace: "pre-wrap" } };
+    const lines = [];
     for (const task of this.tasks.values()) {
       const run = this.getOpenRunForTask(task.id);
       const schedule = typeof this.getScheduleSummary === "function" ? this.getScheduleSummary(task) : (task.time || "-");
-      lines.push(`• ${task.title} [${task.id}]`);
-      lines.push(`  Status: ${run ? run.status : "idle"}`);
-      lines.push(`  Zeitplan: ${schedule}`);
-      lines.push(`  Versand Kind: ${task.childSendNumber || "-"}`);
-      lines.push(`  Antwort Kind: ${task.childReplyId || "-"}`);
-      lines.push(`  Versand Papa: ${task.parentSendNumber || "-"}`);
-      lines.push(`  Antwort Papa: ${task.parentReplyId || "-"}`);
-      lines.push(`  Follow-up Kind/Papa: ${task.childReminderHours || 0}h / ${task.parentReminderHours || 0}h`);
-      if (run) lines.push(`  Referenz: ${run.refCode}`);
-      lines.push("");
+      const status = run ? compactStatusLabel(run.status) : "idle";
+      const ref = run ? ` · ${run.refCode}` : "";
+      lines.push(`${task.title} [${task.id}] · ${status} · ${schedule}${ref}`);
     }
-    return { text: lines.join("\n").trimEnd(), style: { whiteSpace: "pre-wrap" } };
+    return { text: lines.join("\n"), style: { whiteSpace: "pre-wrap" } };
   };
   adapter.getHistoryOverview = function () {
-    const history = Array.isArray(this.history) ? this.history.slice(-this.cfg.historyLimit).reverse() : [];
+    const history = Array.isArray(this.history) ? this.history.slice(-6).reverse() : [];
     if (!history.length) {
-      return { text: "Noch keine Protokolleinträge vorhanden.", style: { whiteSpace: "pre-wrap" } };
+      return { text: "Noch keine Aktionen.", style: { whiteSpace: "pre-wrap" } };
     }
-    const lines = ["Protokoll:", ""];
-    for (const entry of history) {
-      lines.push(`${formatLocalDateTime(entry.timestamp)} | ${entry.type} | ${entry.taskId} | ${entry.refCode} | ${entry.details || ""}`.trim());
-    }
+    const mapType = {
+      started: "gestartet",
+      child_done: "Kind erledigt",
+      parent_confirmed: "Papa bestätigt",
+      cancelled: "abgebrochen",
+      child_reminder: "Erinnerung Kind",
+      parent_reminder: "Erinnerung Papa"
+    };
+    const lines = history.map(entry => `${shortDateTime(entry.timestamp)} · ${mapType[entry.type] || entry.type} · ${entry.taskId}${entry.refCode ? ` · ${entry.refCode}` : ""}`);
     return { text: lines.join("\n"), style: { whiteSpace: "pre-wrap" } };
   };
   adapter.on("message", obj => {
