@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "news": {
+      "0.0.10": {
+        "en": "Admin UI cleaned up: shorter labels, compact status view, and reduced history noise.",
+        "de": "Admin-Oberfläche aufgeräumt: kürzere Labels, kompakte Statusansicht und deutlich weniger Historie-Lärm."
+      },
       "0.0.9": {
         "en": "Tasks can now run weekly, daily, or every X hours. The active runtime supports separate execution schedule and follow-up reminder intervals.",
         "de": "Aufgaben können jetzt wöchentlich, täglich oder alle X Stunden laufen. Die aktive Laufzeit unterstützt damit getrennt den Ausführungszeitplan und die Nachfass-Erinnerungen."
