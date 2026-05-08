@@ -1,8 +1,16 @@
 {
   "common": {
     "name": "reminder",
-    "version": "0.0.11",
+    "version": "0.0.13",
     "news": {
+      "0.0.13": {
+        "en": "Reply contacts now use a real dropdown, and the interval field is only shown for interval schedules.",
+        "de": "Antwortkontakte nutzen jetzt ein echtes Dropdown, und das Feld für das Intervall wird nur noch bei Intervall-Zeitplänen angezeigt."
+      },
+      "0.0.12": {
+        "en": "Reply contact fields now force a real dropdown again instead of a plain editable field.",
+        "de": "Die Felder für Antwortkontakte erzwingen jetzt wieder ein echtes Dropdown statt eines einfachen editierbaren Feldes."
+      },
       "0.0.11": {
         "en": "Reply contact selection restored in the admin UI. Child and parent reply fields are dropdowns again.",
         "de": "Auswahl der Antwortkontakte in der Admin-Oberfläche wiederhergestellt. Die Felder für Kind und Papa sind wieder Dropdowns."
